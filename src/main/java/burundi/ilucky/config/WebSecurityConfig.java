@@ -3,6 +3,7 @@ package burundi.ilucky.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,6 +24,7 @@ import burundi.ilucky.service.UserDetailsServiceImpl;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+    private static final String[] AUTH_WHITELIST = {"/","/api/lucky/**","/api/auth/**","/actuator/**","/h2-console/**","/api/user/**","api/paypal/cancel","api/paypal/success/**"};
 
 
     @Autowired
@@ -43,22 +45,21 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/","/api/lucky/*","/api/auth/*","/actuator/*").permitAll()
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+            http
+                    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                    .csrf(AbstractHttpConfigurer::disable)
+                    .authorizeHttpRequests(authorize -> authorize
+                            .requestMatchers(AUTH_WHITELIST).permitAll()
+                            .anyRequest().authenticated()
+                    )
+                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }
+            return http.build();
+        }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

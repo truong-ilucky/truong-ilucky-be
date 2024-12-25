@@ -1,10 +1,13 @@
 package burundi.ilucky.jwt;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
-
-import burundi.ilucky.model.User;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -27,20 +30,20 @@ public class JwtTokenProvider {
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION);
 
         return Jwts.builder()
-                   .setSubject(Long.toString(user.getId()))
+                   .setSubject(user.getUsername())
                    .setIssuedAt(now)
                    .setExpiration(expiryDate)
                    .signWith(SignatureAlgorithm.HS512, JWT_SECRET)
                    .compact();
     }
 
-    public Long getUserIdFromJWT(String token) {
+    public String getUsernameFromJWT(String token) {
         Claims claims = Jwts.parser()
                             .setSigningKey(JWT_SECRET)
                             .parseClaimsJws(token)
                             .getBody();
 
-        return Long.parseLong(claims.getSubject());
+        return claims.getSubject();
     }
 
     public boolean validateToken(String authToken) {

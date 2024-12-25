@@ -20,6 +20,7 @@ public class UserDTO {
     private Date addTime;
     private long totalPlay;
     private long totalStar;
+    private String username;
     
 //    @JsonProperty("isPremium")
     private boolean isPremium;
@@ -30,6 +31,7 @@ public class UserDTO {
     
     public UserDTO(User user) {
         this.id = user.getId();
+        this.username = user.getUsername();
         this.addTime = user.getAddTime();
         this.totalPlay = user.getTotalPlay();
         this.totalStar = user.getTotalStar();

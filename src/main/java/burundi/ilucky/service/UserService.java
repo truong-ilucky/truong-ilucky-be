@@ -1,8 +1,11 @@
 package burundi.ilucky.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import burundi.ilucky.model.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +33,15 @@ public class UserService {
 	
 	public User saveUser(User user) {
 		return userRepository.save(user);
+	}
+	public List<User> findAll() {
+		return userRepository.findAll();
+	}
+	public List<UserDTO> findTop5(){
+		 List<User> users = userRepository.findTop5();
+		 return users.stream()
+				 .map(UserDTO::new)
+				 .collect(Collectors.toList());
 	}
 
 

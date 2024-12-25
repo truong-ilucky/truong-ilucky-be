@@ -1,4 +1,4 @@
-package burundi.ilucky.payload;
+package burundi.ilucky.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Response {
-	public String status;
-	public String message;
+public class CreateUserDTO {
+    private String username;
+    private String password;
 }
